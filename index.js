@@ -80,6 +80,12 @@ function makeBot(_u, ix) {
 				'Yooo, isnt that some good shit right there'
 			)
 
+			bot.chatAddPattern(
+				/ระบบได้ทำการลบเก็บขยะจำนวน (.*) ชิ้น/,
+				'clearlagged',
+				'ffs i hate myself',
+			)
+
 			const NowPlaying = () => {
 				// รู้แล้วว่าอยู่ในล็อบบี้ งั้นไปกันเลย!
 				setTimeout(goGUI22, 500);
@@ -103,6 +109,13 @@ function makeBot(_u, ix) {
 			 */
 			var fishing = false;
 			var fish = function () {
+				// ClearLag Fix
+				if (!fishing) return;
+				bot.on('clearlagged', matches => {
+					bot.activateItem()
+					bot.activateItem()
+				});
+
 				let running = true;
 				(async () => {
 					const mcData = require('minecraft-data')(bot.version)
