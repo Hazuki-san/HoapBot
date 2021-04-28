@@ -12,8 +12,7 @@
     "fs": "0.0.1-security",
     "mathjs": "^9.3.2",
     "minecraft-data": "^2.82.2",
-    "mineflayer": "^2.20.0",
-    "mineflayer-navigate": "^0.0.10",
+    "mineflayer": "^2.41.0",
     "mineflayer-pathfinder": "^1.6.1",
     "vec3": "^0.1.7"
   }
