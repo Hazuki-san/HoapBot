@@ -5,11 +5,27 @@
  * r0neko | Code Quality CHECK!
  */
 
-const async = require('async');
-var math = require('mathjs');
-var v = require('vec3');
-const fs = require('fs')
+// Packages
 const util = require('util')
+const async = require('async');
+const math = require('mathjs');
+const v = require('vec3');
+
+// Config
+const fs = require('fs')
+let rawdata = fs.readFileSync('config.json');
+let data = JSON.parse(rawdata);
+
+// Setting stuff up
+var host = data["ip"];
+var port = data["port"];
+var version = data["version"];
+var altsfiles = data["alt_txt"];
+var authme = data["authme_pw"];
+var botowner = data["botowner"];
+var interval = data["interval"];
+
+// Mineflayer
 const mineflayer = require('mineflayer')
 const {
 	pathfinder,
@@ -18,31 +34,21 @@ const {
 		GoalBlock
 	}
 } = require('mineflayer-pathfinder')
-var navigatePlugin = require('mineflayer-navigate')(mineflayer);
+//var navigatePlugin = require('mineflayer-navigate')(mineflayer);
 
 const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8')
 const wrap = module.exports.wrap = cb => new Promise(resolve => cb(resolve));
-
-const config = {
-	host: 'mc-zero.net', // ไอพีที่จะเชื่อม
-	port: 25565, // พอร์ต
-	file: './alts.txt', // โหลดบัญชีจากไฟล์
-	interval: 0 // (แนะนำให้ใช้ 4000-5000 สำหรับเซิร์ฟอื่นๆ แต่ว่าเซิร์ฟ ZERO ไม่จำกัดไว้ เลยใช้ 0 ได้)
-}
-
-var botowner = 'Hoap' // ชื่อเจ้าของบอท
-var authme = '@V3RYS3CUR3P@aSw0RD' // รหัสบอททุกตัว
 
 function makeBot(_u, ix) {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
 			const bot = mineflayer.createBot({
 				username: _u,
-				host: config.host,
-				port: config.port,
-				version: "1.8.9"
+				host: host,
+				port: port,
+				version: version
 			})
-			navigatePlugin(bot);
+			//navigatePlugin(bot);
 			console.log("Loaded: " + _u)
 
 			function goGUI22() {
@@ -80,6 +86,12 @@ function makeBot(_u, ix) {
 				'Yooo, isnt that some good shit right there'
 			)
 
+			bot.chatAddPattern(
+				/ระบบได้ทำการลบเก็บขยะจำนวน (.*) ชิ้น/,
+				'clearlagged',
+				'ffs i hate myself',
+			)
+
 			const NowPlaying = () => {
 				// รู้แล้วว่าอยู่ในล็อบบี้ งั้นไปกันเลย!
 				setTimeout(goGUI22, 500);
@@ -103,6 +115,13 @@ function makeBot(_u, ix) {
 			 */
 			var fishing = false;
 			var fish = function () {
+				// ClearLag Fix
+				if (!fishing) return;
+				bot.on('clearlagged', matches => {
+					bot.activateItem()
+					bot.activateItem()
+				});
+
 				let running = true;
 				(async () => {
 					const mcData = require('minecraft-data')(bot.version)
@@ -136,7 +155,7 @@ function makeBot(_u, ix) {
 						await wrap(res => {
 							let onParticles = packet => {
 								let pos = bobber.position
-								if (packet.particleId === 4 && packet.particles === 6 && pos.distanceTo(new v(packet.x, pos.y, packet.z)) <= 1.23) res();
+								if (packet.particleId === 4 && packet.particles === 6 && pos.distanceTo(new v(packet.x, pos.y, packet.z)) <= 0.3) res();
 								bot._client.once('world_particles', onParticles);
 							}
 							bot._client.once('world_particles', onParticles)
@@ -161,8 +180,11 @@ function makeBot(_u, ix) {
 			 * โค้ตแชท
 			 */
 			bot.on('chat', function (username, message) {
+				var matches = botowner.filter(function(pattern) {
+				  return new RegExp(pattern).test(username);
+				})
 				if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
-				if (username !== botowner) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
+				if (!matches) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
 				try {
 					var result = math.eval(message);
@@ -181,7 +203,7 @@ function makeBot(_u, ix) {
 					switch (command) {
 						case 'sudo':
 							if (args.slice(2).join(" ") == "")
-								bot.chat('/w ' + botowner + ' ' + 'จะให้พิมพ์ว่าอะไรหรอ 555');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'จะให้พิมพ์ว่าอะไรหรอ 555');});
 							bot.chat(args.slice(2).join(" "))
 							break;
 						case 'disconnect':
@@ -191,12 +213,12 @@ function makeBot(_u, ix) {
 							try {
 								bot.toss(parseInt(args[2]), null, (args[3]) ? parseInt(args[3]) : 1, function (err) {
 									if (!err)
-										bot.chat('/w ' + botowner + ' ' + 'โยนของให้แล้วนะ');
+										botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'โยนของให้แล้วนะ');});
 									else
-										bot.chat('/w ' + botowner + ' ' + err.message);
+										botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + err.message);});
 								});
 							} catch (e) {
-								bot.chat('/w ' + botowner + ' ' + 'ไม่รู้จักสิ่งนี้อ่ะ');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่รู้จักสิ่งนี้อ่ะ');});
 							}
 							break;
 						case 'dump':
@@ -209,7 +231,7 @@ function makeBot(_u, ix) {
 									count: inventory[item].count
 								});
 							}
-							bot.chat('/w ' + botowner + ' ' + `กำลังโยน ${items.length} ออกจากตัวทั้งหมด`);
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + `กำลังโยนของทั้งหมด ${items.length} ออกจากตัว`);});
 							async.forEachSeries(items, function (item, callback) {
 								bot.toss(item.type, null, item.count, function (err) {
 									if (err) console.log(err);
@@ -220,22 +242,22 @@ function makeBot(_u, ix) {
 						case 'equip':
 							var slot = (['hand', 'head', 'torso', 'legs', 'feed'].indexOf(args[3]) < 0) ? 'hand' : args[3];
 							bot.equip(bot.inventory.slots[parseInt(args[2])], slot, function (err) {
-								if (!err) bot.chat('/w ' + botowner + ' ' + 'ใส่ให้แล้วนะ');
-								else bot.chat('/w ' + botowner + ' ' + err.message);
+								if (!err) botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ใส่ให้แล้วนะ');});
+								else botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + err.message);});
 							})
 						case 'experience':
-							bot.chat('/w ' + botowner + ' ' + 'เลเวลตอนนี้: ' + bot.experience.level);
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลเวลตอนนี้: ' + bot.experience.level);});
 							break;
 						case 'fish':
 							var startFishing = function () {
 								fishing = true;
 								fish();
-								bot.chat('/w ' + botowner + ' ' + 'เริ่มตกปลาแล้ว จะได้ปลาเยอะมั้ยนะ?');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เริ่มตกปลาแล้ว จะได้ปลาเยอะมั้ยนะ?');});
 							};
 							var stopFishing = function () {
 								fishing = false;
 								bot.activateItem();
-								bot.chat('/w ' + botowner + ' ' + 'เลิกตกปลาแล้ว');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลิกตกปลาแล้ว');});
 							};
 							var toggleFishing = function () {
 								if (!fishing) startFishing();
@@ -251,11 +273,11 @@ function makeBot(_u, ix) {
 							var startSniping = function () {
 								sniping = true;
 								snipe();
-								bot.chat('/w ' + botowner + ' ' + 'พวกมันพิมพ์ไม่ทันแน่ 5555');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พวกมันพิมพ์ไม่ทันแน่ 5555');});
 							};
 							var stopSniping = function () {
 								sniping = false;
-								bot.chat('/w ' + botowner + ' ' + 'อะไรอ่ะ กำลังสนุกอยู่เลย ปิดซะล่ะ :<');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'อะไรอ่ะ กำลังสนุกอยู่เลย ปิดซะล่ะ :<');});
 							};
 							var toggleSniping = function () {
 								if (!sniping) startSniping();
@@ -268,18 +290,18 @@ function makeBot(_u, ix) {
 
 							break;
 						case 'food':
-							bot.chat('/w ' + botowner + ' ' + 'หลอดอาหาร: ' + bot.food + '/20');
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'หลอดอาหาร: ' + bot.food + '/20');});
 							break;
 						case 'health':
-							bot.chat('/w ' + botowner + ' ' + 'หลอดเลือด: ' + bot.health + '/20');
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'หลอดเลือด: ' + bot.health + '/20');});
 							break;
 						case 'help':
-							bot.chat('/w ' + botowner + ' ' + 'คำสั่งทั้งหมด: [ sudo, disconnect, drop, dump, equip, experience, fish, snipe, food, health ]')
-							bot.chat('/w ' + botowner + ' ' + 'คำสั่งทั้งหมด (ต่อ): [ help, inventory, item_activate, item_deactivate, locate, look, ping ]')
-							bot.chat('/w ' + botowner + ' ' + 'คำสั่งทั้งหมด (ต่อ): [ route_to, route_stop ]')
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'คำสั่งทั้งหมด: [ sudo, disconnect, drop, dump, equip, experience, fish, snipe, food, health ]')});
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'คำสั่งทั้งหมด (ต่อ): [ help, inventory, item_activate, item_deactivate, locate, look, ping ]')});
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'คำสั่งทั้งหมด (ต่อ): [ route_to, route_stop ]')});
 							break;
 						case 'inventory':
-							bot.chat('/w ' + botowner + ' ' + JSON.stringify(bot.inventory));
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + JSON.stringify(bot.inventory));});
 							break;
 						case 'item_activate':
 							bot.activateItem();
@@ -288,7 +310,7 @@ function makeBot(_u, ix) {
 							bot.deactivateItem();
 							break;
 						case 'locate':
-							bot.chat('/w ' + botowner + ' ' + `ตอนนี้เราอยู่ที่: ${JSON.stringify(bot.entity.position)}`);
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + `ตอนนี้เราอยู่ที่: ${JSON.stringify(bot.entity.position)}`);});
 							break;
 						case 'look':
 							var dir = {
@@ -296,18 +318,20 @@ function makeBot(_u, ix) {
 								pitch: parseFloat(args[3])
 							};
 							if (dir.yaw == null || dir.pitch == null || isNaN(dir.yaw) || isNaN(dir.pitch))
-								return bot.chat('/w ' + botowner + ' ' + 'ไม่รู้จักเลขนี้นะ');
+								return botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่รู้จักเลขนี้นะ');});
 							bot.look(dir.yaw, dir.pitch, true, function () {
-								bot.chat('/w ' + botowner + ' ' + `ตอนนี้กำลังมองที่ ${JSON.stringify(dir)}`);
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + `ตอนนี้กำลังมองที่ ${JSON.stringify(dir)}`);});
 							});
 							break;
 						case 'ping':
-							bot.chat('/w ' + botowner + ' ' + 'เรายังอยู่ดีจ้า!');
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เรายังอยู่ดีจ้า!');});
 							break;
 						case 'route_to':
 							if (args[2] == 'me' || args[2] == 'here') {
 								var target = bot.players[username].entity;
-								bot.navigate.to(target.position);
+								//bot.navigate.to(target.position);
+								bot.pathfinder.setMovements(defaultMove)
+      							bot.pathfinder.setGoal(new GoalNear(p.x, p.y, p.z, 1))
 								break;
 							} else {
 								var dest = {
@@ -316,16 +340,19 @@ function makeBot(_u, ix) {
 									z: parseFloat(args[4])
 								};
 								if (dest.x == null || dest.y == null || dest.z == null || isNaN(dest.x) || isNaN(dest.y) || isNaN(dest.z))
-									return bot.chat('/w ' + botowner + ' ' + 'ที่นี่ที่ไหนหรอ?');
-								bot.navigate.to(v(dest.x, dest.y, dest.z));
+									return botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ที่นี่ที่ไหนหรอ?');});
+								//bot.navigate.to(v(dest.x, dest.y, dest.z));
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalBlock(dest.x, dest.y, dest.z))
 								break;
 							}
 							case 'route_stop':
-								bot.navigate.stop();
+								//bot.navigate.stop();
+								bot.pathfinder.setGoal(null)
 								break;
 							default:
 								console.log(args)
-								bot.chat('/w ' + botowner + ' ' + 'ไม่รู้จักคำสั่งนี้');
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่รู้จักคำสั่งนี้');});
 					}
 				}
 			});
@@ -333,13 +360,13 @@ function makeBot(_u, ix) {
 			bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 			bot.on('error', (err) => reject(err))
 			setTimeout(() => reject(Error('Took too long to spawn.')), 5000) // 5 sec
-		}, config.interval * ix)
+		}, interval * ix)
 	})
 }
 
 
 async function main() {
-	const file = await readFile(config.file)
+	const file = await readFile(altsfiles)
 	const accounts = file.split(/\r?\n/)
 	const botProms = accounts.map(makeBot)
 	const bots = (await Promise.allSettled(botProms)).map(({
