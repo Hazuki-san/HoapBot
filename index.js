@@ -65,7 +65,7 @@ function makeBot(_u, ix) {
 			bot.loadPlugin(pathfinder)
 			bot.once('spawn', () => {
 				bot.chat('/login ' + authme)
-				console.log(_u + ": /login " + authme)
+				//console.log(_u + ": /login " + authme)
 				bot.pathfinder.setMovements(defaultMove)
 				bot.pathfinder.setGoal(new GoalBlock(28, 68, 0))
 				bot.on('goal_reached', (goal) => {
@@ -331,7 +331,7 @@ function makeBot(_u, ix) {
 								var target = bot.players[username].entity;
 								//bot.navigate.to(target.position);
 								bot.pathfinder.setMovements(defaultMove)
-      							bot.pathfinder.setGoal(new GoalNear(target.x, target.y, target.z, 1))
+      							bot.pathfinder.setGoal(new GoalBlock(target.position.x, target.position.y, target.position.z))
 								break;
 							} else {
 								var dest = {
