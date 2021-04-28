@@ -331,7 +331,7 @@ function makeBot(_u, ix) {
 								var target = bot.players[username].entity;
 								//bot.navigate.to(target.position);
 								bot.pathfinder.setMovements(defaultMove)
-      							bot.pathfinder.setGoal(new GoalBlock(target.position.x, target.position.y, target.position.z))
+      							bot.pathfinder.setGoal(new GoalNear(target.position.x, target.position.y, target.position.z, 1))
 								break;
 							} else {
 								var dest = {
