@@ -127,7 +127,8 @@ function makeBot(_u, ix) {
 				(async () => {
 					while (running) {
 						await wrap(res => bot.equip(
-							bot.inventory.findInventoryItem(mcData.itemsByName.fishing_rod.id),
+							//bot.inventory.findInventoryItem(mcData.itemsByName.fishing_rod.id),
+							bot.inventory.findInventoryItem(346),
 							'hand',
 							res
 						));
@@ -155,7 +156,8 @@ function makeBot(_u, ix) {
 						await wrap(res => {
 							let onParticles = packet => {
 								let pos = bobber.position
-								if (packet.particleId === 4 && packet.particles === 6 && pos.distanceTo(new v(packet.x, pos.y, packet.z)) <= 0.3) res();
+								//if (packet.particleId === 4 && packet.particles === 6 && pos.distanceTo(new v(packet.x, pos.y, packet.z)) <= 0.3) res();
+								if (packet.particleId === 4 && packet.particles === 6) res();
 								bot._client.once('world_particles', onParticles);
 							}
 							bot._client.once('world_particles', onParticles)
