@@ -179,11 +179,8 @@ function makeBot(_u, ix) {
 			 * โค้ตแชท
 			 */
 			bot.on('chat', function (username, message) {
-				var matches = botowner.filter(function(pattern) {
-				  return new RegExp(pattern).test(username);
-				})
 				if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
-				if (!matches) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
+				botowner.forEach(function(ownerlist) { if (username !== ownerlist) return; }); // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
 				try {
 					var result = math.eval(message);
