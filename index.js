@@ -31,7 +31,8 @@ const {
 	pathfinder,
 	Movements,
 	goals: {
-		GoalBlock
+		GoalBlock,
+		GoalNear
 	}
 } = require('mineflayer-pathfinder')
 //var navigatePlugin = require('mineflayer-navigate')(mineflayer);
@@ -48,6 +49,8 @@ function makeBot(_u, ix) {
 				port: port,
 				version: version
 			})
+			const mcData = require('minecraft-data')(bot.version)
+			const defaultMove = new Movements(bot, mcData)
 			//navigatePlugin(bot);
 			console.log("Loaded: " + _u)
 
@@ -61,8 +64,6 @@ function makeBot(_u, ix) {
 
 			bot.loadPlugin(pathfinder)
 			bot.once('spawn', () => {
-				const mcData = require('minecraft-data')(bot.version)
-				const defaultMove = new Movements(bot, mcData)
 				bot.chat('/login ' + authme)
 				console.log(_u + ": /login " + authme)
 				bot.pathfinder.setMovements(defaultMove)
@@ -124,7 +125,6 @@ function makeBot(_u, ix) {
 
 				let running = true;
 				(async () => {
-					const mcData = require('minecraft-data')(bot.version)
 					while (running) {
 						await wrap(res => bot.equip(
 							bot.inventory.findInventoryItem(mcData.itemsByName.fishing_rod.id),
@@ -331,7 +331,7 @@ function makeBot(_u, ix) {
 								var target = bot.players[username].entity;
 								//bot.navigate.to(target.position);
 								bot.pathfinder.setMovements(defaultMove)
-      							bot.pathfinder.setGoal(new GoalNear(p.x, p.y, p.z, 1))
+      							bot.pathfinder.setGoal(new GoalNear(target.x, target.y, target.z, 1))
 								break;
 							} else {
 								var dest = {
