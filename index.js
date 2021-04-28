@@ -35,7 +35,6 @@ const {
 		GoalNear
 	}
 } = require('mineflayer-pathfinder')
-//var navigatePlugin = require('mineflayer-navigate')(mineflayer);
 
 const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8')
 const wrap = module.exports.wrap = cb => new Promise(resolve => cb(resolve));
@@ -51,7 +50,6 @@ function makeBot(_u, ix) {
 			})
 			const mcData = require('minecraft-data')(bot.version)
 			const defaultMove = new Movements(bot, mcData)
-			//navigatePlugin(bot);
 			console.log("Loaded: " + _u)
 
 			function goGUI22() {
@@ -65,7 +63,6 @@ function makeBot(_u, ix) {
 			bot.loadPlugin(pathfinder)
 			bot.once('spawn', () => {
 				bot.chat('/login ' + authme)
-				//console.log(_u + ": /login " + authme)
 				bot.pathfinder.setMovements(defaultMove)
 				bot.pathfinder.setGoal(new GoalBlock(28, 68, 0))
 				bot.on('goal_reached', (goal) => {
@@ -331,7 +328,6 @@ function makeBot(_u, ix) {
 						case 'route_to':
 							if (args[2] == 'me' || args[2] == 'here') {
 								var target = bot.players[username].entity;
-								//bot.navigate.to(target.position);
 								bot.pathfinder.setMovements(defaultMove)
       							bot.pathfinder.setGoal(new GoalNear(target.position.x, target.position.y, target.position.z, 1))
 								break;
@@ -343,13 +339,11 @@ function makeBot(_u, ix) {
 								};
 								if (dest.x == null || dest.y == null || dest.z == null || isNaN(dest.x) || isNaN(dest.y) || isNaN(dest.z))
 									return botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ที่นี่ที่ไหนหรอ?');});
-								//bot.navigate.to(v(dest.x, dest.y, dest.z));
 								bot.pathfinder.setMovements(defaultMove)
 								bot.pathfinder.setGoal(new GoalBlock(dest.x, dest.y, dest.z))
 								break;
 							}
 							case 'route_stop':
-								//bot.navigate.stop();
 								bot.pathfinder.setGoal(null)
 								break;
 							default:
