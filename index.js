@@ -3,6 +3,7 @@
  * สำหรับเซิร์ฟเวอร์ mc-zero.net (GUI22)
  * Hazuki-san (Hoap) 2021
  * r0neko | Code Quality CHECK!
+ * Mxnuuel | Extra Help!
  */
 
 // Packages
@@ -180,7 +181,7 @@ function makeBot(_u, ix) {
 			 */
 			bot.on('chat', function (username, message) {
 				if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
-				botowner.forEach(function(ownerlist) { if (username !== ownerlist) return; }); // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
+				if(!botowner.has(username)) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
 				try {
 					var result = math.eval(message);
