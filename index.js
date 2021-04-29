@@ -29,6 +29,7 @@ const interval = data["interval"];
 // Mineflayer
 const mineflayer = require('mineflayer')
 const autoeat = require('mineflayer-auto-eat')
+const pvp = require('mineflayer-pvp').plugin
 const {
 	pathfinder,
 	Movements,
@@ -59,6 +60,7 @@ function makeBot(_u, ix) {
 			// Plugins Load
 			bot.loadPlugin(pathfinder)
 			bot.loadPlugin(autoeat)
+			bot.loadPlugin(pvp)
 			bot.autoEat.enable()
 
 			bot.once('spawn', () => {
@@ -94,7 +96,7 @@ function makeBot(_u, ix) {
 			// Initialize GUI to go to
 			function goGUI22() {
 				setTimeout(bot.activateItem, 500);
-				bot.on('windowOpen', async (window) => {
+				bot.once('windowOpen', async (window) => {
 					window.requiresConfirmation = false // fix
 					await bot.clickWindow(22, 0, 0)
 				})
@@ -106,6 +108,18 @@ function makeBot(_u, ix) {
 			}
 
 			bot.on('nowplayingdetected', NowPlaying)
+
+			/*
+			 * clickwindow
+			*/
+			var lockingwindow = false;
+			var lockwindow = function(number) {
+				if (!lockingwindow) return;
+				bot.on('windowOpen', async (window) => {
+					window.requiresConfirmation = false // fix
+					await bot.clickWindow(parseInt(number), 0, 0)
+				})
+			};
 
 			/*
 			 * SNIPER
@@ -272,7 +286,6 @@ function makeBot(_u, ix) {
 							if (args[2] == 'start') startFishing();
 							else if (args[2] == 'stop') stopFishing();
 							else toggleFishing();
-
 							break;
 						case 'snipe':
 							var startSniping = function () {
@@ -313,6 +326,43 @@ function makeBot(_u, ix) {
 								} catch (e) {botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เหมือนว่าจะไม่ได้อยู่ในระยะนี้นะ...');}); return}
 							}
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เรากำลังตามอยู่นะ นำทางเลย!');});
+							break;
+						case 'fight':
+							if (args[2] == 'me') {
+								var fighter = bot.players[username]
+								if (!fighter) {
+									botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่เจอนะ');});
+									return
+								}
+								bot.pvp.attack(fighter.entity)
+							} else {
+								var fighter = bot.players[args[2]]
+								if (!fighter) {
+									botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่เจอนะ');});
+									return
+								}
+								bot.pvp.attack(fighter.entity)
+							};
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ได้! เดียวจัดการให้!');});
+							break;
+						case 'click_window':
+							var startClicking = function () {
+								lockingwindow = true;
+								lockwindow(args[3]);
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เริ่มคลิกหมายเลข '+args[3]+' แล้ว');});
+							};
+							var stopClicking = function () {
+								lockingwindow = false;
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลิกคลิกแล้ว');});
+							};
+							var toggleClicking = function () {
+								if (!fishing) startFishing();
+								else stopFishing();
+							};
+
+							if (args[2] == 'start') startClicking();
+							else if (args[2] == 'stop') stopClicking();
+							else toggleClicking();
 							break;
 						case 'follow_stop':
 							bot.pathfinder.setGoal(null)
