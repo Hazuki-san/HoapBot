@@ -3,3 +3,5 @@ build
 npm-debug.log
 config.json
 package-lock.json
+
+aoba.txt
