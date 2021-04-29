@@ -114,12 +114,15 @@ function makeBot(_u, ix) {
 			/*
 			 * clickwindow
 			*/
-			var lockingwindow = false;
-			var lockwindow = function(number) {
-				if (!lockingwindow) return;
-				bot.on('windowOpen', async (window) => {
+			var waitingwindow = false;
+			var checkwindow = function(number) {
+				if (!waitingwindow) return;
+				bot.once('windowOpen', async (window) => {
 					window.requiresConfirmation = false // fix
 					await bot.clickWindow(parseInt(number), 0, 0)
+					bot.closeWindow(window);
+					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'กดให้แล้วนะ แล้วก็ปิดหน้าต่างให้แล้ว');});
+					waitingwindow = false
 				})
 			};
 
@@ -361,13 +364,13 @@ function makeBot(_u, ix) {
 							break;
 						case 'click_window':
 							var startClicking = function () {
-								lockingwindow = true;
-								lockwindow(args[3]);
-								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เริ่มคลิกหมายเลข '+args[3]+' แล้ว');});
+								waitingwindow = true;
+								checkwindow(args[3]);
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'กำลังรอ... หากพร้อมจะคลิกหมายเลข '+args[3]+' ทันที');});
 							};
 							var stopClicking = function () {
-								lockingwindow = false;
-								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลิกคลิกแล้ว');});
+								waitingwindow = false;
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ยกเลิกการคลิกแล้ว');});
 							};
 							var toggleClicking = function () {
 								if (!fishing) startFishing();
@@ -393,7 +396,7 @@ function makeBot(_u, ix) {
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'คำสั่งทั้งหมด (ต่อ): [ route_to, route_stop ]')});
 							break;
 						case 'inventory':
-							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + JSON.stringify(bot.inventory));});
+							console.log(bot.username + ': ' + JSON.stringify(bot.inventory));
 							break;
 						case 'item_activate':
 							bot.activateItem();
