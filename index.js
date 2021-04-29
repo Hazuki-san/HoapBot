@@ -18,13 +18,13 @@ let rawdata = fs.readFileSync('config.json');
 let data = JSON.parse(rawdata);
 
 // Setting stuff up
-var host = data["ip"];
-var port = data["port"];
-var version = data["version"];
-var altsfiles = data["alt_txt"];
-var authme = data["authme_pw"];
-var botowner = data["botowner"];
-var interval = data["interval"];
+const host = data["ip"];
+const port = data["port"];
+const version = data["version"];
+const altsfiles = data["alt_txt"];
+const authme = data["authme_pw"];
+const botowner = data["botowner"]
+const interval = data["interval"];
 
 // Mineflayer
 const mineflayer = require('mineflayer')
@@ -181,7 +181,7 @@ function makeBot(_u, ix) {
 			 */
 			bot.on('chat', function (username, message) {
 				if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
-				if(!botowner.has(username)) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
+				if (!botowner.includes(username)) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
 				try {
 					var result = math.eval(message);
