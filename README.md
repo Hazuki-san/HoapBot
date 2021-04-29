@@ -26,7 +26,7 @@ equip - บอทจะใส่ของตามที่ช่องที่
 experience - ดู EXP บอท<br>
 fish - ตกปลา <br>
 snipe - เปิดระบบแข่งพิมพ์ไว (ChatReaction)<br>
-follow - ตามผู้เล่นคนนั้นๆ เช่น !all follow Hoap<br>
+follow - ตามผู้เล่นคนนั้นๆ เช่น !all follow Hoap **! ชื่อต้องตรงทุกตัว เช่น Hoap ไม่ใช่ hoap และอยู่ในระยะที่บอทเห็นเท่านั้น !**<br>
 food - เช็คหลอดอาหาร<br>
 health - ดูหลอดเลือก<br>
 help - ดูคำสั่งทั้งหมด<br>
