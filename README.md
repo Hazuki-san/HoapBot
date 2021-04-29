@@ -18,6 +18,7 @@ A multi (?) purpose bot for MC-ZERO.NET
 - !all fish (ตกปลาพร้อมกันทุกตัว)
 
 # คำสั่งทั้งหมด
+clear_armor - ถอดเกราะออก<br>
 click_window - ให้บอทกดไอเทมหมายเลขนั้นๆ หากมีหน้าต่างให้กด เช่น !all click_window start 50 (กดไอเทมหมายเลข 51 ในช่อง)<br>
 disconnect - ให้บอทออกจากเกม<br>
 drop - โยนของที่ตรงกับไอดีนั้นๆ เช่น 297 (ขนมปัง)<br>

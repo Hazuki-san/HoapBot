@@ -25,6 +25,7 @@ const altsfiles = data["alt_txt"];
 const authme = data["authme_pw"];
 const botowner = data["botowner"]
 const interval = data["interval"];
+const events = require('events').EventEmitter.defaultMaxListeners = Infinity // Call me CRAZYCHAMP
 
 // Mineflayer
 const mineflayer = require('mineflayer')
@@ -110,6 +111,27 @@ function makeBot(_u, ix) {
 			}
 
 			bot.on('nowplayingdetected', NowPlaying)
+
+			/*
+			 * dumping
+			*/
+			var dumping = false;
+			var dumpAll = function(number) {
+				if (!dumping) return;
+				const excludedItems = ['fishing_rod']
+				const item = bot.inventory.items().find(item => !excludedItems.includes(item.name))
+				if (item) {
+					bot.tossStack(item).then(() => {
+						setTimeout(dumpAll)
+					}).catch(err => {
+						console.log(err)
+						setTimeout(dumpAll, 100)
+					})
+				} else {
+					dumping = false
+					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลิกโยนของแล้ว');});
+				}
+			};
 
 			/*
 			 * clickwindow
@@ -230,6 +252,14 @@ function makeBot(_u, ix) {
 								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'จะให้พิมพ์ว่าอะไรหรอ 555');});
 							bot.chat(args.slice(2).join(" "))
 							break;
+						case 'clear_armor':
+							//ugly but hey it works?
+							bot.equip(4, 'hand')
+							bot.equip(5, 'hand')
+							bot.equip(6, 'hand')
+							bot.equip(7, 'hand')
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เอาออกหมดแล้ว');});
+							break;
 						case 'gear_up':
 							bot.armorManager.equipAll()
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พร้อม!');});
@@ -250,22 +280,23 @@ function makeBot(_u, ix) {
 							}
 							break;
 						case 'dump':
-							var inventory = bot.inventory.slots;
-							var items = [];
-							for (var item in inventory) {
-								if (!inventory[item]) continue;
-								items.push({
-									type: inventory[item].type,
-									count: inventory[item].count
-								});
-							}
-							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + `กำลังโยนของทั้งหมด ${items.length} ออกจากตัว`);});
-							async.forEachSeries(items, function (item, callback) {
-								bot.toss(item.type, null, item.count, function (err) {
-									if (err) console.log(err);
-									callback();
-								});
-							});
+							var startDumping = function () {
+								dumping = true;
+								dumpAll();
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'กำลังโยนของทั้งหมดที่มี...');});
+							};
+							var stopDumping = function () {
+								dumping = false;
+								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เลิกโยนของแล้ว');});
+							};
+							var toggleDumping = function () {
+								if (!dumping) startDumping();
+								else stopDumping();
+							};
+
+							if (args[2] == 'start') startDumping();
+							else if (args[2] == 'stop') stopDumping();
+							else toggleDumping();
 							break;
 						case 'equip':
 							var slot = (['hand', 'head', 'torso', 'legs', 'feed'].indexOf(args[3]) < 0) ? 'hand' : args[3];
@@ -314,7 +345,6 @@ function makeBot(_u, ix) {
 							if (args[2] == 'start') startSniping();
 							else if (args[2] == 'stop') stopSniping();
 							else toggleSniping();
-
 							break;
 						case 'follow':
 							if (args[2] == 'me') {
