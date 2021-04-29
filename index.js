@@ -59,6 +59,7 @@ function makeBot(_u, ix) {
 			// Plugins Load
 			bot.loadPlugin(pathfinder)
 			bot.loadPlugin(autoeat)
+			bot.autoEat.enable()
 
 			bot.once('spawn', () => {
 				bot.chat('/login ' + authme)
@@ -295,19 +296,21 @@ function makeBot(_u, ix) {
 							break;
 						case 'follow':
 							if (args[2] == 'me') {
-										var target = bot.players[username].entity;
+								try {
+									var target = bot.players[username].entity;
+									if (target != null && target != undefined)
 										bot.pathfinder.setMovements(defaultMove)
 										bot.pathfinder.setGoal(new GoalFollow(target, 1), true)
-										if (target != null) {
-											bot.lookAt(target.position.plus(v(0, 1.62, 0)));
-										}
+										bot.lookAt(target.position.plus(v(0, 1.62, 0)));
+								} catch (e) {botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เหมือนว่าจะไม่ได้อยู่ในระยะนี้นะ...');}); return}
 							} else {
-								var target = bot.players[args[2]].entity;
-								bot.pathfinder.setMovements(defaultMove)
-								bot.pathfinder.setGoal(new GoalFollow(target, 1), true)
-								if (target != null) {
-									bot.lookAt(target.position.plus(v(0, 1.62, 0)));
-								}
+								try {
+									var target = bot.players[args[2]].entity;
+									if (target != null && target != undefined)
+										bot.pathfinder.setMovements(defaultMove)
+										bot.pathfinder.setGoal(new GoalFollow(target, 1), true)
+										bot.lookAt(target.position.plus(v(0, 1.62, 0)));
+								} catch (e) {botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เหมือนว่าจะไม่ได้อยู่ในระยะนี้นะ...');}); return}
 							}
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เรากำลังตามอยู่นะ นำทางเลย!');});
 							break;
@@ -378,13 +381,6 @@ function makeBot(_u, ix) {
 					}
 				}
 			});
-
-			bot.on('health', () => {
-				if (bot.food === 20) bot.autoEat.disable()
-				// Disable the plugin if the bot is at 20 food points
-				else bot.autoEat.enable() // Else enable the plugin again
-			})
-
 			bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 			bot.on('error', (err) => reject(err))
 			setTimeout(() => reject(Error('Took too long to spawn.')), 5000) // 5 sec
