@@ -31,7 +31,7 @@ const events = require('events').EventEmitter.defaultMaxListeners = Infinity // 
 const mineflayer = require('mineflayer')
 const autoeat = require('mineflayer-auto-eat')
 const pvp = require('mineflayer-pvp').plugin
-const armorManager = require('mineflayer-armor-manager')
+//const armorManager = require('mineflayer-armor-manager')
 const {
 	pathfinder,
 	Movements,
@@ -60,7 +60,7 @@ function makeBot(_u, ix) {
 			console.log("Loaded: " + _u)
 
 			// Plugins Load
-			bot.loadPlugin(armorManager);
+			//bot.loadPlugin(armorManager);
 			bot.loadPlugin(pathfinder)
 			bot.loadPlugin(autoeat)
 			bot.loadPlugin(pvp)
@@ -254,14 +254,104 @@ function makeBot(_u, ix) {
 							break;
 						case 'clear_armor':
 							//ugly but hey it works?
-							bot.equip(4, 'hand')
-							bot.equip(5, 'hand')
-							bot.equip(6, 'hand')
-							bot.equip(7, 'hand')
+							bot.unequip("head")
+							bot.unequip("torso")
+							bot.unequip("legs")
+							bot.unequip("feet")
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เอาออกหมดแล้ว');});
 							break;
 						case 'gear_up':
-							bot.armorManager.equipAll()
+							var checkItemEquiped = function (itemArmor) {
+								let swordEquiped, isSword, bowEquiped, isBow
+
+								let slotID
+								switch (itemArmor) {
+									case 'helmet':
+										slotID = 5
+										break;
+									case 'chestplate':
+										slotID = 6
+										break
+									case 'leggings':
+										slotID = 7
+										break
+									case 'boots':
+										slotID = 8
+										break
+									case 'shield':
+										slotID = 45
+										break
+									case 'sword':
+										slotID = bot.getEquipmentDestSlot('hand')
+										swordEquiped = bot.inventory.slots[slotID]
+										if (swordEquiped === null) { return false }
+										isSword = swordEquiped.name.includes('sword')
+										return isSword
+									case 'bow':
+										slotID = bot.getEquipmentDestSlot('hand')
+										bowEquiped = bot.inventory.slots[slotID]
+										if (bowEquiped === null) { return false }
+										isBow = bowEquiped.name.includes('bow')
+										return isBow
+									default:
+										return false
+									}
+
+								return bot.inventory.slots[slotID] !== null
+							}
+
+							var equipItem = function (itemArmor) {
+								return new Promise((resolve, reject) => {
+									if (checkItemEquiped(itemArmor)) {
+										//console.log("checking checked")
+										resolve()
+										return
+									}
+
+									const armor = bot.inventory.items().find(item => item.name.includes(itemArmor))
+
+									if (!armor) {
+										//console.log("no armor checked")
+										resolve()
+										return
+									}
+
+									let location
+									switch (itemArmor) {
+										case 'helmet':
+											location = 'head'
+											break;
+										case 'chestplate':
+											location = 'torso'
+											break;
+										case 'leggings':
+											location = 'legs'
+											break;
+										case 'boots':
+											location = 'feet'
+											break;
+										case 'sword':
+											location = 'hand'
+											break;
+										case 'shield':
+											location = 'off-hand'
+											break;
+									}
+									bot.equip(armor, location, (error) => {
+										if (error === undefined) {
+											//console.log("equip checked")
+											resolve()
+										}
+										reject(error)
+									})
+								})
+							}
+							equipItem("helmet");
+							equipItem("chestplate");
+							equipItem("leggings");
+							equipItem("boots");
+							equipItem("shield");
+							equipItem("sword");
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พร้อม!');});
 							break;
 						case 'disconnect':
