@@ -3,7 +3,7 @@
  * สำหรับเซิร์ฟเวอร์ mc-zero.net (GUI22)
  * Hazuki-san (Hoap) 2021
  * r0neko | Code Quality CHECK!
- * Mxnuuel | Extra Help!
+ * Mxnuuel (Lemres) | Extra Help!
  */
 
 // Packages
