@@ -13,6 +13,7 @@
     "mathjs": "^9.3.2",
     "minecraft-data": "^2.82.2",
     "mineflayer": "^2.41.0",
+    "mineflayer-armor-manager": "^1.4.1",
     "mineflayer-auto-eat": "^2.0.0",
     "mineflayer-pathfinder": "^1.6.1",
     "mineflayer-pvp": "^1.0.2",

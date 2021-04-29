@@ -30,6 +30,7 @@ const interval = data["interval"];
 const mineflayer = require('mineflayer')
 const autoeat = require('mineflayer-auto-eat')
 const pvp = require('mineflayer-pvp').plugin
+const armorManager = require('mineflayer-armor-manager')
 const {
 	pathfinder,
 	Movements,
@@ -58,6 +59,7 @@ function makeBot(_u, ix) {
 			console.log("Loaded: " + _u)
 
 			// Plugins Load
+			bot.loadPlugin(armorManager);
 			bot.loadPlugin(pathfinder)
 			bot.loadPlugin(autoeat)
 			bot.loadPlugin(pvp)
@@ -225,6 +227,10 @@ function makeBot(_u, ix) {
 								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'จะให้พิมพ์ว่าอะไรหรอ 555');});
 							bot.chat(args.slice(2).join(" "))
 							break;
+						case 'gear_up':
+							bot.armorManager.equipAll()
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พร้อม!');});
+							break;
 						case 'disconnect':
 							bot.quit();
 							break;
@@ -334,6 +340,8 @@ function makeBot(_u, ix) {
 									botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่เจอนะ');});
 									return
 								}
+								var sword = bot.inventory.items().find(item => item.name.includes('sword'))
+        						if (sword) bot.equip(sword, 'hand')
 								bot.pvp.attack(fighter.entity)
 							} else {
 								var fighter = bot.players[args[2]]
@@ -341,9 +349,15 @@ function makeBot(_u, ix) {
 									botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่เจอนะ');});
 									return
 								}
+								var sword = bot.inventory.items().find(item => item.name.includes('sword'))
+        						if (sword) bot.equip(sword, 'hand')
 								bot.pvp.attack(fighter.entity)
 							};
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ได้! เดียวจัดการให้!');});
+							break;
+						case 'fight_stop':
+							bot.pvp.stop()
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พอละๆ');});
 							break;
 						case 'click_window':
 							var startClicking = function () {
@@ -431,6 +445,7 @@ function makeBot(_u, ix) {
 					}
 				}
 			});
+			bot.on('death', function() {bot.emit("respawn")});
 			bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 			bot.on('error', (err) => reject(err))
 			setTimeout(() => reject(Error('Took too long to spawn.')), 5000) // 5 sec
