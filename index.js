@@ -28,6 +28,7 @@ const interval = data["interval"];
 
 // Mineflayer
 const mineflayer = require('mineflayer')
+const autoeat = require('mineflayer-auto-eat')
 const {
 	pathfinder,
 	Movements,
@@ -43,6 +44,7 @@ const wrap = module.exports.wrap = cb => new Promise(resolve => cb(resolve));
 function makeBot(_u, ix) {
 	return new Promise((resolve, reject) => {
 		setTimeout(() => {
+			// Initialize bot
 			const bot = mineflayer.createBot({
 				username: _u,
 				host: host,
@@ -53,15 +55,10 @@ function makeBot(_u, ix) {
 			const defaultMove = new Movements(bot, mcData)
 			console.log("Loaded: " + _u)
 
-			function goGUI22() {
-				setTimeout(bot.activateItem, 500);
-				bot.on('windowOpen', async (window) => {
-					window.requiresConfirmation = false // fix
-					await bot.clickWindow(22, 0, 0)
-				})
-			}
-
+			// Plugins Load
 			bot.loadPlugin(pathfinder)
+			bot.loadPlugin(autoeat)
+
 			bot.once('spawn', () => {
 				bot.chat('/login ' + authme)
 				bot.pathfinder.setMovements(defaultMove)
@@ -73,6 +70,7 @@ function makeBot(_u, ix) {
 				})
 			})
 
+			// Chat Pattern
 			bot.chatAddPattern(
 				/(ตอนนี้กำลังเล่นเพลง)/,
 				'nowplayingdetected',
@@ -90,6 +88,15 @@ function makeBot(_u, ix) {
 				'clearlagged',
 				'ffs i hate myself',
 			)
+
+			// Initialize GUI to go to
+			function goGUI22() {
+				setTimeout(bot.activateItem, 500);
+				bot.on('windowOpen', async (window) => {
+					window.requiresConfirmation = false // fix
+					await bot.clickWindow(22, 0, 0)
+				})
+			}
 
 			const NowPlaying = () => {
 				// รู้แล้วว่าอยู่ในล็อบบี้ งั้นไปกันเลย!
@@ -173,7 +180,6 @@ function makeBot(_u, ix) {
 			 */
 			bot.on('message', (cm) => {
 				console.log(bot.username + ": " + cm.toString())
-				if (cm.toString().includes(bot.username)) return
 			})
 
 			/*
