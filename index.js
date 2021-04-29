@@ -34,7 +34,8 @@ const {
 	Movements,
 	goals: {
 		GoalBlock,
-		GoalNear
+		GoalNear,
+		GoalFollow
 	}
 } = require('mineflayer-pathfinder')
 
@@ -292,6 +293,27 @@ function makeBot(_u, ix) {
 							else toggleSniping();
 
 							break;
+						case 'follow':
+							if (args[2] == 'me') {
+										var target = bot.players[username].entity;
+										bot.pathfinder.setMovements(defaultMove)
+										bot.pathfinder.setGoal(new GoalFollow(target, 1), true)
+										if (target != null) {
+											bot.lookAt(target.position.plus(v(0, 1.62, 0)));
+										}
+							} else {
+								var target = bot.players[args[2]].entity;
+								bot.pathfinder.setMovements(defaultMove)
+								bot.pathfinder.setGoal(new GoalFollow(target, 1), true)
+								if (target != null) {
+									bot.lookAt(target.position.plus(v(0, 1.62, 0)));
+								}
+							}
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เรากำลังตามอยู่นะ นำทางเลย!');});
+							break;
+						case 'follow_stop':
+							bot.pathfinder.setGoal(null)
+							break;
 						case 'food':
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'หลอดอาหาร: ' + bot.food + '/20');});
 							break;
@@ -347,12 +369,12 @@ function makeBot(_u, ix) {
 								bot.pathfinder.setGoal(new GoalBlock(dest.x, dest.y, dest.z))
 								break;
 							}
-							case 'route_stop':
-								bot.pathfinder.setGoal(null)
-								break;
-							default:
-								console.log(args)
-								botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่รู้จักคำสั่งนี้');});
+						case 'route_stop':
+							bot.pathfinder.setGoal(null)
+							break;
+						default:
+							console.log(args)
+							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ไม่รู้จักคำสั่งนี้');});
 					}
 				}
 			});
