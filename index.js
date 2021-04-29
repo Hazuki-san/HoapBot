@@ -333,7 +333,7 @@ function makeBot(_u, ix) {
 							if (args[2] == 'me' || args[2] == 'here') {
 								var target = bot.players[username].entity;
 								bot.pathfinder.setMovements(defaultMove)
-      							bot.pathfinder.setGoal(new GoalNear(target.position.x, target.position.y, target.position.z, 1))
+								bot.pathfinder.setGoal(new GoalNear(target.position.x, target.position.y, target.position.z, 1))
 								break;
 							} else {
 								var dest = {
@@ -356,6 +356,12 @@ function makeBot(_u, ix) {
 					}
 				}
 			});
+
+			bot.on('health', () => {
+				if (bot.food === 20) bot.autoEat.disable()
+				// Disable the plugin if the bot is at 20 food points
+				else bot.autoEat.enable() // Else enable the plugin again
+			})
 
 			bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 			bot.on('error', (err) => reject(err))
