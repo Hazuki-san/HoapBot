@@ -341,7 +341,7 @@ function makeBot(_u, ix) {
 									return
 								}
 								var sword = bot.inventory.items().find(item => item.name.includes('sword'))
-        						if (sword) bot.equip(sword, 'hand')
+								if (sword) bot.equip(sword, 'hand')
 								bot.pvp.attack(fighter.entity)
 							} else {
 								var fighter = bot.players[args[2]]
@@ -350,7 +350,7 @@ function makeBot(_u, ix) {
 									return
 								}
 								var sword = bot.inventory.items().find(item => item.name.includes('sword'))
-        						if (sword) bot.equip(sword, 'hand')
+								if (sword) bot.equip(sword, 'hand')
 								bot.pvp.attack(fighter.entity)
 							};
 							botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'ได้! เดียวจัดการให้!');});
