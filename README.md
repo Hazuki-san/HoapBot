@@ -1,4 +1,4 @@
-# Mineflayer00
+# HoapBot
 A multi (?) purpose bot for MC-ZERO.NET
 
 # อันนี้คืออะไร?
