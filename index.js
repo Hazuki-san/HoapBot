@@ -9,6 +9,7 @@ let data = JSON.parse(rawdata);
 const readFile = (fileName) => util.promisify(fs.readFile)(fileName, 'utf8')
 const altsfiles = data["alt_txt"];
 
+// Thanks to sefirosweb for this line of code!
 function startBot (botName) {
   const command = 'node ' + path.join(__dirname, 'hoapbot') + ' ' + botName
   cp.exec(command, (err, stdout, stderr) => {
