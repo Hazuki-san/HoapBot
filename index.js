@@ -28,7 +28,7 @@ function startBot (botName) {
     if (stderr) {
       console.log(`Stderr: ${stderr}`)
     }
-  })
+  }).stdout.pipe(process.stdout);
 }
 
 const accounts = fs.readFileSync(altsfiles).toString().split(/\r?\n/)

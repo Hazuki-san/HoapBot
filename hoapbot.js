@@ -569,4 +569,5 @@ function makeBot(username) {
 	bot.on('death', function() {bot.emit("respawn")});
 	bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 	bot.on('error', (err) => reject(err))
+	bot.on('end', makeBot)
 }
