@@ -156,7 +156,9 @@ function makeBot(username) {
 	var snipe = function() {
 		if (!sniping) return;
 		bot.on('chatreactiondetected', matches => {
-			bot.chat(`${matches}`) // ตรงๆแม่นๆ แน่นอนจริงๆ
+			setTimeout(function () {
+				bot.chat(`${matches}`) // ตรงๆแม่นๆ แน่นอนจริงๆ
+			}, Math.floor(Math.random() * (Math.floor(data["rmax"]) - Math.ceil(data["rmin"])) + Math.ceil(data["rmin"])));
 		});
 	};
 
@@ -224,8 +226,7 @@ function makeBot(username) {
 					}
 					bot._client.once('world_particles', onParticles)
 				});
-				bot.activateItem();
-				await sleep(400);
+				setTimeout(function () {bot.activateItem()}, 400)
 			}
 		})();
 		return () => {
