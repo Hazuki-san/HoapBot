@@ -185,7 +185,7 @@ function makeBot(username) {
 
 				let bobber = await wrap(res => {
 					let onSpawn = entity => {
-						if (entity.objectType !== "Fishing Float") return;
+						if (entity.objectType !== "Fishing Float" || entity.objectType !== "Fishing Bobber") return;
 						bot.once('entitySpawn', onSpawn);
 						if (entity.position.z < 0) {
 							if ((entity.position.z-0.15625) === bot.entity.position.z) res(entity);
