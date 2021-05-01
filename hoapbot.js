@@ -29,6 +29,7 @@ const events = require('events').EventEmitter.defaultMaxListeners = Infinity // 
 const mineflayer = require('mineflayer')
 const autoeat = require('mineflayer-auto-eat')
 const pvp = require('mineflayer-pvp').plugin
+const Item = require('prismarine-item')(version)
 //const armorManager = require('mineflayer-armor-manager')
 const {
 	pathfinder,
@@ -116,7 +117,7 @@ function makeBot(username) {
 	var dumping = false;
 	var dumpAll = function(number) {
 		if (!dumping) return;
-		const excludedItems = ['fishing_rod']
+		const excludedItems = ['fishing_rod', 'steak', 'bread']
 		const item = bot.inventory.items().find(item => !excludedItems.includes(item.name))
 		if (item) {
 			bot.tossStack(item).then(() => {
@@ -181,15 +182,30 @@ function makeBot(username) {
 				));
 
 				let bobber = await wrap(res => {
-					/* @param {Entity} entity */
 					let onSpawn = entity => {
 						if (entity.objectType !== "Fishing Float") return;
-						bot.once('entitySpawn', onSpawn);
-						res(entity);
+						bot.on('entitySpawn', onSpawn);
+						if (entity.position.z < 0) {
+							((entity.position.z-0.15625) === bot.entity.position.z)
+						} else {
+							((entity.position.z+0.15625) === bot.entity.position.z)
+						} res(entity);
+						return;
 					}
-					bot.on('entitySpawn', onSpawn);
+
+					bot.once('entitySpawn', onSpawn);
 					bot.activateItem();
 				});
+
+				console.log(bot.username + ": I found a bobber!")
+				console.log(bot.username + ": Here's some info about it!")
+				if (bobber.position.z < 0) {
+					console.log(bot.username + "'s Bob Z: " + (bobber.position.z-0.15625))
+					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
+				} else {
+					console.log(bot.username + "'s Bob Z: " + (bobber.position.z+0.15625))
+					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
+				}
 
 				if (!running) {
 					bot.activateItem();
@@ -203,15 +219,13 @@ function makeBot(username) {
 				await wrap(res => {
 					let onParticles = packet => {
 						let pos = bobber.position
-						// Method 1
 						if (packet.particleId === 4 && packet.particles === 6 && pos.distanceTo(new v(packet.x, pos.y, packet.z)) <= 0.3) res();
-						// Method 2
-						if (packet.particleId === 4 && packet.particles === 6 && Math.abs(bobber.velocity.y) > -0.5) res();
 						bot._client.once('world_particles', onParticles);
 					}
 					bot._client.once('world_particles', onParticles)
 				});
 				bot.activateItem();
+				await sleep(400);
 			}
 		})();
 		return () => {
@@ -223,13 +237,13 @@ function makeBot(username) {
 	 * โค้ตแสดงข้อความในเซิรฺ์ฟ
 	 */
 	bot.on('message', (cm) => {
-		console.log(bot.username + ": " + cm.toString())
+		//console.log(bot.username + ": " + cm.toString())
 	})
 
 	/*
 	 * โค้ตแชท
 	 */
-	bot.on('chat', function (username, message) {
+	bot.on('chat', async function (username, message) {
 		if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
 		if (!botowner.includes(username)) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
@@ -255,10 +269,10 @@ function makeBot(username) {
 					break;
 				case 'clear_armor':
 					//ugly but hey it works?
-					bot.unequip("head")
-					bot.unequip("torso")
-					bot.unequip("legs")
-					bot.unequip("feet")
+					await bot.unequip("head")
+					await bot.unequip("torso")
+					await bot.unequip("legs")
+					await bot.unequip("feet")
 					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'เอาออกหมดแล้ว');});
 					break;
 				case 'gear_up':
@@ -345,12 +359,12 @@ function makeBot(username) {
 							})
 						})
 					}
-					equipItem("helmet");
-					equipItem("chestplate");
-					equipItem("leggings");
-					equipItem("boots");
-					equipItem("shield");
-					equipItem("sword");
+					await equipItem("helmet");
+					await equipItem("chestplate");
+					await equipItem("leggings");
+					await equipItem("boots");
+					await equipItem("shield");
+					await equipItem("sword");
 					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พร้อม!');});
 					break;
 				case 'disconnect':
@@ -569,4 +583,10 @@ function makeBot(username) {
 	bot.on('death', function() {bot.emit("respawn")});
 	bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 	bot.on('error', (err) => reject(err))
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

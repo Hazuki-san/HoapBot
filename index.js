@@ -20,14 +20,6 @@ function startBot (botName) {
       setTimeout(() => startBot(botName), 1000)
       return
     }
-
-    if (stdout) {
-      console.log(`Stdout: ${stdout}`)
-    }
-
-    if (stderr) {
-      console.log(`Stderr: ${stderr}`)
-    }
   }).stdout.pipe(process.stdout);
 }
 
