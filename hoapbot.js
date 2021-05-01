@@ -174,6 +174,12 @@ function makeBot(username) {
 				fish();
 		});
 
+		let bobberId = 90
+		// 1.14+ Fix
+		if (bot.supportFeature('fishingBobberCorrectlyNamed')) {
+			bobberId = mcData.entitiesByName.fishing_bobber.id
+		}
+
 		let running = true;
 		(async () => {
 			while (running) {
@@ -185,7 +191,7 @@ function makeBot(username) {
 
 				let bobber = await wrap(res => {
 					let onSpawn = entity => {
-						if (entity.objectType !== "Fishing Float" || entity.objectType !== "Fishing Bobber") return;
+						if (entity.entityType !== bobberId) return;
 						bot.once('entitySpawn', onSpawn);
 						if (entity.position.z < 0) {
 							if ((entity.position.z-0.15625) === bot.entity.position.z) res(entity);
