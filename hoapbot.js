@@ -117,7 +117,7 @@ function makeBot(username) {
 	var dumping = false;
 	var dumpAll = function(number) {
 		if (!dumping) return;
-		const excludedItems = ['fishing_rod', 'steak', 'bread']
+		const excludedItems = ['fishing_rod', 'cooked_beef', 'bread']
 		const item = bot.inventory.items().find(item => !excludedItems.includes(item.name))
 		if (item) {
 			bot.tossStack(item).then(() => {
@@ -184,7 +184,7 @@ function makeBot(username) {
 				let bobber = await wrap(res => {
 					let onSpawn = entity => {
 						if (entity.objectType !== "Fishing Float") return;
-						bot.on('entitySpawn', onSpawn);
+						bot.once('entitySpawn', onSpawn);
 						if (entity.position.z < 0) {
 							if ((entity.position.z-0.15625) === bot.entity.position.z) res(entity);
 						} else {
