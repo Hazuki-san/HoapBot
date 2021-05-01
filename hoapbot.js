@@ -186,10 +186,10 @@ function makeBot(username) {
 						if (entity.objectType !== "Fishing Float") return;
 						bot.on('entitySpawn', onSpawn);
 						if (entity.position.z < 0) {
-							((entity.position.z-0.15625) === bot.entity.position.z)
+							if ((entity.position.z-0.15625) === bot.entity.position.z) res(entity);
 						} else {
-							((entity.position.z+0.15625) === bot.entity.position.z)
-						} res(entity);
+							if ((entity.position.z+0.15625) === bot.entity.position.z) res(entity);
+						}
 						return;
 					}
 
