@@ -243,7 +243,7 @@ function makeBot(username) {
 	/*
 	 * โค้ตแชท
 	 */
-	bot.on('chat', async function (username, message) {
+	bot.on('chat', function (username, message) {
 		if (username == bot.username) return; //ถ้าตรงกับชื่อตัวเอง อย่าสนใจ
 		if (!botowner.includes(username)) return; // ถ้าไม่ใช่เจ้าของบอท อย่าสนใจ
 
@@ -267,6 +267,7 @@ function makeBot(username) {
 					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'จะให้พิมพ์ว่าอะไรหรอ 555');});
 					bot.chat(args.slice(2).join(" "))
 					break;
+				/*
 				case 'clear_armor':
 					//ugly but hey it works?
 					await bot.unequip("head")
@@ -367,6 +368,7 @@ function makeBot(username) {
 					await equipItem("sword");
 					botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'พร้อม!');});
 					break;
+				*/
 				case 'disconnect':
 					bot.quit();
 					break;
