@@ -226,7 +226,8 @@ function makeBot(username) {
 					}
 					bot._client.once('world_particles', onParticles)
 				});
-				setTimeout(function () {bot.activateItem()}, 400)
+				await bot.activateItem();
+				await sleep(500)
 			}
 		})();
 		return () => {
