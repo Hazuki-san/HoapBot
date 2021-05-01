@@ -237,7 +237,7 @@ function makeBot(username) {
 	 * โค้ตแสดงข้อความในเซิรฺ์ฟ
 	 */
 	bot.on('message', (cm) => {
-		//console.log(bot.username + ": " + cm.toString())
+		console.log(bot.username + ": " + cm.toString())
 	})
 
 	/*
