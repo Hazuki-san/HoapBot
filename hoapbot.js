@@ -168,8 +168,8 @@ function makeBot(username) {
 		// ClearLag Fix
 		if (!fishing) return;
 		bot.on('clearlagged', matches => {
-				bot.activateItem()
-				bot.activateItem()
+				bot.activateItem();
+				fish();
 		});
 
 		let running = true;
