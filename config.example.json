@@ -12,5 +12,7 @@
 	"_WHAT_IS_BOTOWNER_": "BotOwner คือ คนคุมบอท เพิ่มกี่คนก็ได้ แค่ว่าอาจจะทำให้บอทโดนเตะ หากเซิฟมีระบบกันสแปม",
 	"botowner": ["Hoap", "NatsueKunGz_XD"],
 	"_WHAT_IS_INTERVAL": "Interval คือระยะเวลาที่เว้นไว้สำหรับบอทเข้าเซิร์ฟเวอร์ แนะนำให้อยู่ในระหว่า' 4000-5000 แต่ต้นฉบับคือ 0 เพราะ MC-ZERO ไม่ได้ตรวจไว้",
-	"interval": 0
+	"interval": 0,
+	"_WHAT_IS_EXCLUDED_ITEMS_": "Excluded Items คือรายชื่อของที่จะไม่ให้โยนออกตอนใช้คำสั่ง dump เช่น cooked_beef (เนื้อวัวย่าง) หรือ fishing_rod (คันเบ็ตตกปลา)",
+	"excluded_items": ["fishing_rod", "cooked_beef", "bread"]
 }

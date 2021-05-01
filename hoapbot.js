@@ -117,7 +117,7 @@ function makeBot(username) {
 	var dumping = false;
 	var dumpAll = function(number) {
 		if (!dumping) return;
-		const excludedItems = ['fishing_rod', 'cooked_beef', 'bread']
+		const excludedItems = data["excluded_items"]
 		const item = bot.inventory.items().find(item => !excludedItems.includes(item.name))
 		if (item) {
 			bot.tossStack(item).then(() => {
