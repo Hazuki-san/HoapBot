@@ -322,14 +322,14 @@ function makeBot(username) {
 					let onSpawn = entity => {
 						if (entity.entityType !== bobberId) return;
 						bot.once('entitySpawn', onSpawn);
-						// bot = 256
-						// bobber = 257.23
-						// bobber > bot
-						// bot < bobber
+						// Precise <= 0.3
+						// Default <= 1.23
+						// Rage <= 5
+						// MAD < Infinity
 						if (entity.position.z < 0) {
-							if ((entity.position.z-1.23) >= bot.entity.position.z && (entity.position.z-1.23) <= bot.entity.position.z) res(entity);
+							if ((entity.position.z-1.23) <= bot.entity.position.z && (entity.position.z+1.23) >= bot.entity.position.z) res(entity);
 						} else {
-							if ((entity.position.z+1.23) >= bot.entity.position.z && (entity.position.z+1.23) <= bot.entity.position.z) res(entity);
+							if ((entity.position.z+1.23) >= bot.entity.position.z && (entity.position.z-1.23) <= bot.entity.position.z) res(entity);
 						}
 						return;
 					}
@@ -341,10 +341,10 @@ function makeBot(username) {
 				console.log(bot.username + ": I found a bobber!")
 				console.log(bot.username + ": Here's some info about it!")
 				if (bobber.position.z < 0) {
-					console.log(bot.username + "'s Bob Z: " + (bobber.position.z-0.15625))
+					console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
 					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
 				} else {
-					console.log(bot.username + "'s Bob Z: " + (bobber.position.z+0.15625))
+					console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
 					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
 				}
 
