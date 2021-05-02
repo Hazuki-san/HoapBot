@@ -322,10 +322,14 @@ function makeBot(username) {
 					let onSpawn = entity => {
 						if (entity.entityType !== bobberId) return;
 						bot.once('entitySpawn', onSpawn);
+						// bot = 256
+						// bobber = 257.23
+						// bobber > bot
+						// bot < bobber
 						if (entity.position.z < 0) {
-							if ((entity.position.z-1.23) === bot.entity.position.z) res(entity);
+							if ((entity.position.z-1.23) >= bot.entity.position.z && (entity.position.z-1.23) <= bot.entity.position.z) res(entity);
 						} else {
-							if ((entity.position.z+1.23) === bot.entity.position.z) res(entity);
+							if ((entity.position.z+1.23) >= bot.entity.position.z && (entity.position.z+1.23) <= bot.entity.position.z) res(entity);
 						}
 						return;
 					}
