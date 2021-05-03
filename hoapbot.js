@@ -174,15 +174,15 @@ function makeBot(username) {
 	var farmingmob = false;
 	var killingmob = function() {
 		if (!farmingmob) return;
-	    bot.on('physicTick', () => {
-	    	var sword = bot.inventory.items().find(item => item.name.includes('sword'))
+		bot.on('physicTick', () => {
+			var sword = bot.inventory.items().find(item => item.name.includes('sword'))
 			if (sword) bot.equip(sword, 'hand')
 			const filter = e => e.type === 'mob' && (e.mobType === 'Spider' || e.mobType === 'Cave Spider')
 
 			const entity = bot.nearestEntity(filter)
 			if (entity) {
 				bot.pvp.attack(entity)
-		  	}
+			}
 		})
 	}
 
@@ -203,52 +203,52 @@ function makeBot(username) {
 	var farm = function() {
 		if (!farming) return;
 		function collectPumpkin() {
-		  // Find a nearby pumpkin block
-		  const pumpkin = bot.findBlock({
-		    matching: mcData.blocksByName.pumpkin.id,
-		    maxDistance: 64
-		  })
+			// Find a nearby pumpkin block
+			const pumpkin = bot.findBlock({
+				matching: mcData.blocksByName.pumpkin.id,
+				maxDistance: 64
+			})
 
-		  if (pumpkin) {
-		    // If we found one, collect it.
-		    bot.collectBlock.collect(pumpkin, err => {
-		      if (err) // Handle errors, if any
-		        console.log(err)
-		      else
-		        collectGrass() // Collect another pumpkin block
-		    })
-		  }
+			if (pumpkin) {
+			// If we found one, collect it.
+				bot.collectBlock.collect(pumpkin, err => {
+					if (err) // Handle errors, if any
+						console.log(err)
+					else
+						collectGrass() // Collect another pumpkin block
+				})
+			}
 		}
 
 		function blockToHarvest () {
 			return bot.findBlock({
-		    	point: bot.entity.position,
-		    	maxDistance: 3,
-		    	matching: (block) => {
-		    		return block && block.type === mcData.blocksByName.pumpkin.id
-		    	}
+				point: bot.entity.position,
+				maxDistance: 3,
+				matching: (block) => {
+					return block && block.type === mcData.blocksByName.pumpkin.id
+				}
 			})
 		}
 
 		async function loop () {
-		  try {
-		    while (1) {
-		      const toHarvest = blockToHarvest()
-		      if (toHarvest) {
-		        await bot.dig(toHarvest)
-		      } else {
-		        break
-		      }
-		    }
-		  } catch (e) {
-		    console.log(e)
-		  }
+			try {
+				while (1) {
+					const toHarvest = blockToHarvest()
+					if (toHarvest) {
+						await bot.dig(toHarvest)
+					} else {
+						break
+					}
+				}
+			} catch (e) {
+				console.log(e)
+			}
 
-		  // No block to harvest or sow. Postpone next loop a bit
-		  setTimeout(function () {
-		  	loop()
-		  	collectPumpkin()
-		  }, 1000)
+			// No block to harvest or sow. Postpone next loop a bit
+			setTimeout(function () {
+				loop()
+				collectPumpkin()
+			}, 1000)
 		}
 		loop()
 	}
@@ -261,17 +261,17 @@ function makeBot(username) {
 	var fish = async function () {
 		if (!fishing) return;
 		try {
-    		await bot.equip(mcData.itemsByName.fishing_rod.id, 'hand')
-  		} catch (err) {
-    		return console.log(err.message)
-  		}
+			await bot.equip(mcData.itemsByName.fishing_rod.id, 'hand')
+		} catch (err) {
+			return console.log(err.message)
+		}
 
 		nowFishing = true
 		try {
-		    await bot.fish()
-		    fish()
+			await bot.fish()
+			fish()
 		} catch (err) {
-		    console.log(err.message)
+			console.log(err.message)
 		}
 		nowFishing = false
 
@@ -1130,7 +1130,7 @@ function makeBot(username) {
 }
 
 function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 }
