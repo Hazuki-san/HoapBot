@@ -174,35 +174,21 @@ function makeBot(username) {
 	var farmingmob = false;
 	var killingmob = function() {
 		if (!farmingmob) return;
-		var sword = bot.inventory.items().find(item => item.name.includes('sword'))
-		if (sword) bot.equip(sword, 'hand')
-		bot.pvp.movements = false
-		setInterval(() => {
-	        const mobFilter = e => e.type === 'mob' && (e.mobType === 'Spider' || e.mobType === 'Cave Spider')
-	        const mob = bot.nearestEntity(mobFilter)
+	    bot.on('physicTick', () => {
+	    	var sword = bot.inventory.items().find(item => item.name.includes('sword'))
+			if (sword) bot.equip(sword, 'hand')
+			const filter = e => e.type === 'mob' && (e.mobType === 'Spider' || e.mobType === 'Cave Spider')
 
-	        if (!mob) return;
-
-	        const pos = mob.position;
-	        bot.lookAt(pos, true, () => {
-	            bot.pvp.attack(mob);
-	        });
-	    }, 750);
+			const entity = bot.nearestEntity(filter)
+			if (entity) {
+				bot.pvp.attack(entity)
+		  	}
+		})
 	}
 
 	/*
 	 * SNIPER
 	*/
-	var sniping = false;
-	var snipe = function() {
-		if (!sniping) return;
-		bot.on("chat:chatreactiondetected", matches => {
-			setTimeout(function () {
-				bot.chat(`${matches}`) // ตรงๆแม่นๆ แน่นอนจริงๆ
-			}, Math.floor(Math.random() * (Math.floor(data["rmax"]) - Math.ceil(data["rmin"])) + Math.ceil(data["rmin"])));
-		});
-	};
-
 	var sniping = false;
 	var snipe = function() {
 		if (!sniping) return;
@@ -338,18 +324,18 @@ function makeBot(username) {
 					bot.activateItem();
 				});
 
-				console.log(bot.username + ": I found a bobber!")
-				console.log(bot.username + ": Here's some info about it!")
+				await console.log(bot.username + ": I found a bobber!")
+				await console.log(bot.username + ": Here's some info about it!")
 				if (bobber.position.z < 0) {
-					console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
-					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
+					await console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
+					await console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
 				} else {
-					console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
-					console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
+					await console.log(bot.username + "'s Bob Z: " + (bobber.position.z))
+					await console.log(bot.username + "'s Bot Z: " + bot.entity.position.z)
 				}
 
 				if (!running) {
-					bot.activateItem();
+					await bot.activateItem();
 					break;
 				}
 
@@ -595,6 +581,7 @@ function makeBot(username) {
 					};
 					var stopMobFarm = function () {
 						farmingmob = false;
+						bot.pvp.stop();
 						botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'DDDDDDDDD');});
 					};
 					var toggleFarm = function () {
@@ -971,6 +958,7 @@ function makeBot(username) {
 					};
 					var stopMobFarm = function () {
 						farmingmob = false;
+						bot.pvp.stop();
 						botowner.forEach(function(ownerlist) { bot.chat('/w ' + ownerlist + ' ' + 'DDDDDDDDD');});
 					};
 					var toggleFarm = function () {
@@ -1132,7 +1120,11 @@ function makeBot(username) {
 			}
 		}
 	})
-	bot.on('death', function() {bot.emit("respawn")});
+	bot.on('death', function() {
+		bot.emit("respawn")
+		bot.pvp.stop()
+		bot.pathfinder.setGoal(null)
+	});
 	bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 	bot.on('error', (err) => reject(err))
 }
