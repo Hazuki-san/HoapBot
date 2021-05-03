@@ -23,7 +23,7 @@ const port = data["port"];
 const version = data["version"];
 const authme = data["authme_pw"];
 const botowner = data["botowner"]
-const events = require('events').EventEmitter.defaultMaxListeners = Infinity // Call me CRAZYCHAMP
+//const events = require('events').EventEmitter.defaultMaxListeners = Infinity // Call me CRAZYCHAMP
 
 // Mineflayer
 const mineflayer = require('mineflayer')
